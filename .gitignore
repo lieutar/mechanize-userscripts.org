@@ -1,0 +1,16 @@
+# Backup files
+
+*~
+
+# Makefile.PL's build 
+
+META.yml
+MYMETA.json
+MYMETA.yml
+Makefile
+inc/
+
+# make install
+
+blib/
+pm_to_blib
