@@ -17,6 +17,8 @@ Perl 5.01+
   - WWW::Mechanize
   - JSON::Syck
   - Data::Dumper
+  - HTML::DOM
+  - HTML::StripTags
 
 For use of `Makefile.PL` and `make install`:
 
