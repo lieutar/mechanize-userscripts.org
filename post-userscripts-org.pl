@@ -106,7 +106,26 @@ $mec->submit_form(
                             }
                  );
 
-# TODO treat login error
+continue_or_die($mec);
+
+sub continue_or_die{
+
+  my ($mec) = @_;
+
+  use HTML::DOM;
+  use HTML::StripTags qw(strip_tags);
+
+  my $dom = HTML::DOM->new;
+  $dom->write( $mec->content() );
+  $dom->close;
+
+  my $error = $dom->getElementsByClassName('notice error')->[0];
+  if ( $error ) {
+    my $allowed_tags = '';  # ex.: '<u><b>'
+    say strip_tags( $error->innerHTML , $allowed_tags );
+    exit;
+  }
+}
 
 if ( @ARGV < 1 )
 {
