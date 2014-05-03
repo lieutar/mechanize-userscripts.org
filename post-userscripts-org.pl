@@ -27,16 +27,21 @@ my ($USERID,$PASSWORD) = do{
 sub upload{
   my ($mec, %info) = @_;
   $mec->get($UPLOAD_NEW);
+
   $mec->submit_form(
                     form_number => 1,
                     fields => {
-                               script_src => $info{script}
+                               'script[src]' => $info{script}
                               }
                    );
-  $mec->submit_form(
-                   )
-}
 
+  # TODO response validation?
+
+  # TODO send metadata:
+
+  $mec->submit_form(
+                   );
+}
 
 sub update{
   my ($mec, %info) = @_;
@@ -52,19 +57,26 @@ sub update{
 }
 
 my $mec = WWW::Mechanize->new;
+
 $mec->get( $LOGIN );
 $mec->submit_form(
-                  form_number => 2,
+                  form_number => 1,
                   fields => {
                              login => $USERID,
                              password => $PASSWORD
                             }
                  );
 
+# TODO treat login error
 
-
+=comment
 my ($id, $script) = @ARGV;
 update($mec,
        id     => $id,
        script => $script);
+=cut
+
+my ($script) = @ARGV;
+upload($mec,
+       script => "$ENV{PWD}/$script");
 
