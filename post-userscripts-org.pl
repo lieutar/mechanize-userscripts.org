@@ -3,10 +3,13 @@
 use strict;
 use warnings;
 use 5.01;
+
 use WWW::Mechanize;
 use JSON::Syck;
 use Data::Dumper;
 use Path::Class;
+
+use Getopt::Long;
 
 my $BASE        = 'http://userscripts.org';
 my $LOGIN       = "$BASE/login";
@@ -23,6 +26,16 @@ my ($USERID,$PASSWORD) = do{
   my $info = $users->{$user};
   ($user, $info->{password});
 };
+
+sub usage
+{
+  print "Unknown option: @_\n" if ( @_ );
+  print "usage: program [[ID] FILE] | [--help]\n";
+}
+
+sub list{
+  say "not implemeted";
+}
 
 sub upload{
   my ($mec, %info) = @_;
@@ -49,11 +62,21 @@ sub update{
   my $url =  "$UPDATE_BASE/$id";
   $mec->get($url);
   $mec->submit_form(
-                    form_number => 2,
+                    form_number => 1,
                     fields => {
                                src => $info{script}
                               }
                    );
+}
+
+my ($help);
+
+if ( @ARGV > 2 or
+      ! GetOptions('help' => \$help)
+      or defined $help )
+{
+  usage();
+  exit;
 }
 
 my $mec = WWW::Mechanize->new;
@@ -69,14 +92,26 @@ $mec->submit_form(
 
 # TODO treat login error
 
-=comment
-my ($id, $script) = @ARGV;
-update($mec,
-       id     => $id,
-       script => $script);
-=cut
+if ( @ARGV < 1 )
+{
+  list();
+  exit;
+}
 
-my ($script) = @ARGV;
-upload($mec,
-       script => "$ENV{PWD}/$script");
+if ( @ARGV == 1 )  # and !help
+{
+  my ($script) = @ARGV;
+  upload($mec,
+         script => "$ENV{PWD}/$script");
+  exit;
+}
+
+if ( @ARGV == 2 )
+{
+  my ($id, $script) = @ARGV;
+  update($mec,
+         id     => $id,
+         script => "$ENV{PWD}/$script");
+  exit;
+}
 
