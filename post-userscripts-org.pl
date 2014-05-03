@@ -4,6 +4,9 @@ use strict;
 use warnings;
 use 5.01;
 
+use utf8;
+use open ':std', ':encoding(UTF-8)';
+
 use WWW::Mechanize;
 use JSON::Syck;
 use Data::Dumper;
@@ -13,6 +16,7 @@ use Getopt::Long;
 
 my $BASE        = 'http://userscripts.org';
 my $LOGIN       = "$BASE/login";
+my $LIST        = "$BASE/home/scripts";
 my $UPLOAD_NEW  = "$BASE/scripts/new";
 my $UPDATE_BASE = "$BASE/scripts/upload";
 
@@ -34,7 +38,19 @@ sub usage
 }
 
 sub list{
-  say "not implemeted";
+  my ($mec) = @_;
+  $mec->get($LIST);
+
+  my @links = $mec->find_all_links(
+                                    url_regex => qr/\/scripts\/show\//
+                                  );
+
+  while (my ($i, $el) = each @links) {
+    my $id = do { (my $tmp = $el->url) =~ s/\/scripts\/show\///; $tmp };
+    my $name = $el->text;
+    printf("%8s",$id);
+    say ' ‒ ',$name;
+  }
 }
 
 sub upload{
@@ -94,7 +110,7 @@ $mec->submit_form(
 
 if ( @ARGV < 1 )
 {
-  list();
+  list($mec);
   exit;
 }
 
