@@ -64,7 +64,7 @@ sub upload{
                               }
                    );
 
-  # TODO response validation?
+  continue_or_die($mec);  # alpha test (goal: warn user)
 
   # TODO send metadata:
 
@@ -83,6 +83,7 @@ sub update{
                                src => $info{script}
                               }
                    );
+  continue_or_die($mec);  # alpha test (goal: warn user)
 }
 
 my ($help);
@@ -113,16 +114,29 @@ sub continue_or_die{
   my ($mec) = @_;
 
   use HTML::DOM;
-  use HTML::StripTags qw(strip_tags);
 
   my $dom = HTML::DOM->new;
   $dom->write( $mec->content() );
   $dom->close;
 
+  # login error
   my $error = $dom->getElementsByClassName('notice error')->[0];
   if ( $error ) {
+    use HTML::StripTags qw(strip_tags);
     my $allowed_tags = '';  # ex.: '<u><b>'
     say strip_tags( $error->innerHTML , $allowed_tags );
+    exit;
+  }
+
+  # file send error
+  $error = $dom->getElementById('errorExplanation');
+  if ( $error ) {
+    use HTML::FormatText;
+    my $formatter = HTML::FormatText->new(
+                                          leftmargin => 2,
+                                          rightmargin => 80
+                                         );
+    say "\n".$formatter->format_string($error->innerHTML);
     exit;
   }
 }

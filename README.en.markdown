@@ -19,6 +19,7 @@ Perl 5.01+
   - Data::Dumper
   - HTML::DOM
   - HTML::StripTags
+  - HTML::FormatText
 
 For use of `Makefile.PL` and `make install`:
 
